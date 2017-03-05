@@ -19,6 +19,7 @@ class ArrayList
 
     Malloc()
     {
+        Size*=2;
         temp=new int[Size];
 
         //copying into temporary array
