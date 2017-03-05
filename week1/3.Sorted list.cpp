@@ -8,10 +8,9 @@
 
 using namespace std;
 
-#define Size 100
 #define dbg printf("in");
 
-int r=2;
+int Size=10;
 class ArrayList
 {
     int i,j,k;
@@ -21,9 +20,8 @@ class ArrayList
 
     Malloc()
     {
-        len=Size*r;
-        r=r*2;
-        temp=new int[len];
+        Size*=2;
+        temp=new int[Size];
 
         //copying into temporary array
         for(i=0;i<n;i++)
@@ -31,11 +29,12 @@ class ArrayList
 
 
         //allocating more memory to the original
-        a=new int[len];
+        a=new int[Size];
 
 
         //copying back from temp
-        a=temp;
+        for(i=0;i<n;i++)
+            a[i]=temp[i];
 
         delete[] temp;
 
@@ -186,7 +185,7 @@ int strToNum(string s)
 
 int main()
 {
-    //freopen("in.txt","r",stdin);
+    freopen("in.txt","r",stdin);
     int i,j,k;
     int x,y,z,idx;
     char ch;
