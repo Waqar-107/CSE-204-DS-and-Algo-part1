@@ -8,10 +8,9 @@
 
 using namespace std;
 
-#define Size 10
 #define dbg printf("in");
 
-int r=2;
+int Size=10;
 class ArrayList
 {
     int i,j,k;
@@ -20,21 +19,21 @@ class ArrayList
 
     Malloc()
     {
-        len=Size*r;
-        r=r*2;
-        temp=new int[len];
+        temp=new int[Size];
 
         //copying into temporary array
         for(i=0;i<n;i++)
             temp[i]=a[i];
 
 
+        delete a;
         //allocating more memory to the original
-        a=new int[len];
+        a=new int[Size];
 
 
         //copying back from temp
-        a=temp;
+        for(i=0;i<n;i++)
+            a[i]=temp[i];
 
         delete[] temp;
 
