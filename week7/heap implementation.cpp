@@ -64,7 +64,7 @@ public:
 
     //---------------------------------------------------------------------------------------------
     //insert an item
-    void insertItem(int data, int key)
+    void insertItem(int data, float key)
     {
         heapLength++;
         A[heapLength].data=data;
@@ -104,26 +104,28 @@ public:
     //The function updates the key value of an existing data stored in the heap
     void updateKey(int data, float key)
     {
-        if(!map[data])
+        //search
+        int idx=0;
+        idx=map[data];
+
+        if(!idx)
         {
             printf("Data not found\n");
             return ;
         }
 
-        //search
-        int idx;
-        for(int i=1;i<=heapLength;i++)
+        //this node should be placed in lower parts of the tree
+        if(A[idx].key>key)
         {
-            if(data==A[i].data)
-            {
-                idx=i;
-                break;
-            }
+            A[idx].key=key;
+            buHeapify(idx);
         }
 
-        A[idx].key=key;
-        buHeapify(idx);
-        heapify(idx);
+        else
+        {
+             A[idx].key=key;
+             heapify(idx);
+        }
 
     }
     //---------------------------------------------------------------------------------------------
@@ -249,7 +251,6 @@ public:
 
 int main()
 {
-    //freopen("test.txt","r",stdin);
     int choice,data;
     float key;
     MinHeap heap;
