@@ -354,7 +354,7 @@ bool Graph::hasCommonAdjacent(int u, int v)
         item=adjList[u].getItem(i);
 
         //at least one item found so return true.
-        if(adjList[v].searchItem(item))
+        if(adjList[v].searchItem(item)!=NULL_VALUE)
             return true;
     }
 
