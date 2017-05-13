@@ -10,7 +10,9 @@ int Merge(int a[],int l,int m,int r)
     n2=r-m;
 
     //x and y for left and right sub-array
-    int x[n1],y[n2];
+    int *x,*y;
+    x=new int[n1];
+    y=new int[n2];
 
     //---------------------------------copying the sub-arrays
     k=l;
@@ -56,6 +58,9 @@ int Merge(int a[],int l,int m,int r)
         a[k]=y[w],k++;
     //---------------------------------copying the rest of the items
 
+    delete[] x;
+    delete[] y;
+
     return local_count;
 }
 
@@ -77,7 +82,7 @@ int MergeSort(int a[],int l,int r)
 
 int main()
 {
-    //freopen("in.txt","r",stdin);
+    freopen("in.txt","r",stdin);
     int i,j,k;
     int n;
 
