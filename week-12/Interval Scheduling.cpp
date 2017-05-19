@@ -81,7 +81,7 @@ void MergeSort(pair<int,int> a[],int l,int r)
 
 int main()
 {
-    freopen("in.txt","r",stdin);
+    //freopen("in.txt","r",stdin);
     int i,j,k;
     int n,s,f;
     int count=0;
