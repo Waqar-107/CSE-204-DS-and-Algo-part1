@@ -84,6 +84,7 @@ int main()
     freopen("in.txt","r",stdin);
     int i,j,k;
     int n,s,f;
+    int count=0;
 
     cin>>n;
     pair<int,int> a[n];
@@ -96,21 +97,23 @@ int main()
 
     MergeSort(a,0,n-1);
 
-    vector<pair<int,int>> v;
-    v.push_back(a[0]);
+    pair<int,int> v[n];
+    v[0]=a[0];
+    count++;
 
     j=0;
     for(i=1;i<n;i++)
     {
         if(a[i].first>=v[j].second)
         {
-            v.push_back(a[i]);
             j++;
+            v[j]=a[i];
+            count++;
         }
     }
 
-    cout<<v.size()<<endl;
-    for(i=0;i<v.size();i++)
+    cout<<count<<endl;
+    for(i=0;i<count;i++)
         cout<<v[i].first<<" "<<v[i].second<<endl;
 
     return 0;
