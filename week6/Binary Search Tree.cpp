@@ -4,12 +4,13 @@
 
 #include<stdio.h>
 #include<stdlib.h>
+#include<queue>
 
 
 #define FALSE_VALUE 0
 #define TRUE_VALUE   1
 
-
+using namespace std;
 //-------------------------------------------------------------------
 struct treeNode
 {
@@ -192,174 +193,97 @@ int calcDepth(int item)
 
 
 //-------------------------------------------------------------------
-int deleteItem(struct treeNode * node, int item)
+//returns the minimum item in the tree
+treeNode *getMinItem(struct treeNode *node)
 {
-    bool right=false;
-    struct treeNode *temp,*prev,*temp2;
+    struct treeNode *temp;
+    temp=node;
 
-    temp=searchItem(root,item);
-    if(temp==0)
+    while(temp->left!=0)
     {
-        return FALSE_VALUE;
+        temp=temp->left;
     }
 
-    temp=root;prev=0;
+    return temp;
 
-    while(true)
-    {
-        if(item==temp->item)
-            break;
-
-        prev=temp;
-
-        if(temp->item<item)
-        {
-            temp=temp->right;
-            right=true;
-        }
-
-        else
-        {
-            temp=temp->left;
-            right=false;
-        }
-    }
-
-
-    //the item is not found
-    if(temp==0)
-        return FALSE_VALUE;
-
-    //the item has just left child
-    if(temp->left!=0 && temp->right==0)
-    {
-        temp2=temp->left;
-
-        //if the item is root that is to be deleted
-        if(temp==root && prev==0)
-        {
-            root=temp2;
-        }
-
-        else
-        {
-            prev->left=temp2;
-        }
-
-        free(temp);
-        return TRUE_VALUE;
-
-    }
-
-    //item has only right child
-    if(temp->left==0 && temp->right!=0)
-    {
-        temp2=temp->right;
-
-        //if the item is root that is to be deleted
-        if(temp==root && prev==0)
-        {
-            root=temp2;
-        }
-
-        else
-        {
-            prev->right=temp2;
-        }
-
-        free(temp);
-        return TRUE_VALUE;
-
-    }
-
-    //the item is a leaf
-    if(temp->left==0 && temp->right==0)
-    {
-        //the root is the only element
-        if(temp==root)
-        {
-            root=0;
-            free(temp);
-            return TRUE_VALUE;
-        }
-
-        if(right)
-            prev->right=0;
-        else
-            prev->left=0;
-
-        free(temp);
-
-        return TRUE_VALUE;
-    }
-
-    //the item has both left and right child
-    //the item will be replaced by the minimum of the right sub-tree
-    //here the items will be changed and the node where the minimum of right sub-tree is will be freed
-    if(temp->left!=0 && temp->right!=0)
-    {
-        temp2=temp->right;
-        prev=temp;
-
-        //if there is just a right child not a sub-tree
-        if(temp2->left==0 && temp2->right==0)
-        {
-            temp->item=temp2->item;
-            temp->right=0;
-        }
-
-        //if the right child itself has just a right child
-        if(temp2->left==0 && temp2->right!=0)
-        {
-            temp->item=temp2->item;
-            temp->right=temp2->right;
-
-            free(temp2);
-            return TRUE_VALUE;
-        }
-
-        //now the min of right sub-tree
-        //here the right child of the item has both right and left child
-        while(temp2->left!=0)
-        {
-            prev=temp2;
-            temp2=temp2->left;
-        }
-
-        prev->left=0;
-        temp->item=temp2->item;
-
-        free(temp2);
-        return TRUE_VALUE;
-
-    }
-
-    return TRUE_VALUE;
 }
 //-------------------------------------------------------------------
 
 
-//-------------------------------------------------------------------
-//returns the minimum item in the tree
-int getMinItem()
-{
-    struct treeNode *temp;
-    temp=root;
 
-    //tree has no nodes
-    if(root==0)
+//-------------------------------------------------------------------
+int deleteItem(struct treeNode * node, int item)
+{
+    treeNode *pi;
+    treeNode *temp=searchItem(node,item);
+
+    if(!temp)
     {
         return FALSE_VALUE;
     }
 
-    int Min;
-    while(temp!=0)
+    //if temp has only one child or no child at all
+    if((temp->left!=0 && temp->right==0) || (temp->left==0 && temp->right!=0) || (temp->left==0 && temp->right==0))
     {
-        Min=temp->item;
-        temp=temp->left;
+        //find temps parent
+        pi=node;
+        bool f=1;
+
+        while(pi)
+        {
+            if(pi->left!=0 && (pi->left)->item==item)
+                break;
+
+            else if(pi->right!=0 && (pi->right)->item==item)
+            {
+                f=0;break;
+            }
+
+            if(item>(pi->item))
+                pi=pi->right;
+            else
+                pi=pi->left;
+
+        }
+
+        if(temp->left!=0 && temp->right==0)
+        {
+
+            if(f)
+                pi->left=temp->left;
+            else
+                pi->right=temp->left;
+        }
+
+        else if(temp->left==0 && temp->right!=0)
+        {
+            if(f)
+                pi->left=temp->right;
+            else
+                pi->right=temp->right;
+        }
+
+        else
+        {
+            if(f)
+                pi->left=0;
+            else
+                pi->right=0;
+        }
+
+        free(temp);
     }
 
-    return Min;
+    else
+    {
+        treeNode *m=getMinItem(temp->right);
+        int x=m->item;
+        deleteItem(root,m->item);
+
+        temp->item=x;
+    }
+
+     return TRUE_VALUE;
 
 }
 //-------------------------------------------------------------------
@@ -423,9 +347,67 @@ void printInOrder(struct treeNode * node, int height)
 }
 //-------------------------------------------------------------------
 
+queue<treeNode*> q;
+void levelOrder()
+{
+    if(root!=0)
+        q.push(root);
+
+    while(!q.empty())
+    {
+        struct treeNode *temp;
+        temp=q.front();
+        q.pop();
+
+        printf("%d ",temp->item);
+
+        if(temp->left)
+            q.push(temp->left);
+        if(temp->right)
+            q.push(temp->right);
+    }
+
+    printf("\n");
+}
+
+void printPostOrder(struct treeNode *temp)
+{
+    if(temp->left==0 && temp->right==0)
+    {
+        printf("%d ",temp->item);
+        return;
+    }
+
+    if(temp->left)
+        printPostOrder(temp->left);
+
+    if(temp->right)
+        printPostOrder(temp->right);
+
+    printf("%d ",temp->item);
+}
+
+void printPreOrder(struct treeNode *temp)
+{
+    if(temp->left==0 && temp->right==0)
+    {
+        printf("%d ",temp->item);
+        return;
+    }
+
+    printf("%d ",temp->item);
+
+    if(temp->left)
+        printPreOrder(temp->left);
+    if(temp->right)
+        printPreOrder(temp->right);
+}
 
 int main(void)
 {
+    //freopen("in.txt","r",stdin);
+
+
     initializeTree();
     while(1)
     {
@@ -433,7 +415,8 @@ int main(void)
         printf("4. Print height of tree. 5. Print height of an item. \n");
         printf("6.get size. 7.calculate depth of an item.\n");
         printf("8.get min. 9.get max. 10.search in range\n");
-        printf("11. PrintInOrder. 12. exit.\n");
+        printf("11. In-OrderTraversal. 12. Level-Order traversal. 13Pre-Order. 14.Post-Order\n");
+        printf("15.Exit\n\n");
 
         int ch;
         scanf("%d",&ch);
@@ -496,13 +479,13 @@ int main(void)
 
         else if(ch==8)
         {
-            int x;
-            x=getMinItem();
+            treeNode *x;
+            x=getMinItem(root);
 
-            if(x==FALSE_VALUE)
+            if(x==0)
                 printf("no element found\n ");
             else
-                printf("%d is the minimum element\n",x);
+                printf("%d is the minimum element\n",x->item);
         }
 
         else if(ch==9)
@@ -533,9 +516,24 @@ int main(void)
         }
 
         else if(ch==12)
+            levelOrder(),printf("\n");
+
+        else if(ch==13)
         {
-            break;
+            printf("preOrder------------------------------------------------------------------------\n");
+            printPreOrder(root);
+            printf("\npreOrder------------------------------------------------------------------------\n");
         }
+
+        else if(ch==14)
+        {
+            printf("postOrder------------------------------------------------------------------------\n");
+            printPostOrder(root);
+            printf("\npostOrder------------------------------------------------------------------------\n");
+        }
+
+        else if(ch==15)
+            break;
     }
 
     return 0;
